@@ -1,6 +1,3 @@
-
-
-// Note: For question 2, don’t worry about adding the shop name and shop location to question 2. Submit a github repository link for question 2.
 const express = require("express");
 const app = express();
 const PORT = 3000;
@@ -84,6 +81,5 @@ app.delete("/products/:id", (req, res) => {
     return res.status(404).json({ message: "Product not found" });
 
   const deleted = products.splice(index, 1);
-  res.json({ message: "Product deleted", product: deleted[0] });
+  res.json({ message: "Product deleted" });
 });
-

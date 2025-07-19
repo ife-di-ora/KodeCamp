@@ -16,6 +16,7 @@ const mongoose = require("mongoose");
 const joi = require("joi");
 const bcrypt = require("bcrypt");
 const jsonwebtoken = require("jsonwebtoken");
+const verifyToken = require("./middleware/checkAuth");
 
 const userModel = require("./schema/user");
 const productModel = require("./schema/product");
@@ -124,13 +125,9 @@ app.get("/products", async (req, res) => {
   }
 });
 
-app.post("/products", async (req, res) => {
+app.post("/products", verifyToken, async (req, res) => {
   const { productName, cost, productImages, description, stockStatus } =
     req.body;
-
-  const [scheme, token] = req.header.authorization.split(" ");
-  if (scheme.toLocaleLowerCase() == "bearer") {
-  }
 });
 
 // app.get("/", (req, res) => {

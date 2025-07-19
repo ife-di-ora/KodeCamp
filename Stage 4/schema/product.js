@@ -22,7 +22,7 @@ productSchema = new mongoose.Schema(
       type: String,
     },
     stockStatus: {
-      type: Boolean,
+      type: String,
     },
   },
   { timestamps: true }

@@ -9,7 +9,7 @@ let products = [];
 
 // Helper: Generate random ID
 function generateId() {
-  return Math.random();
+  return Math.ceil(Math.random() * 1000);
 }
 
 // Valid stock statuses
@@ -50,12 +50,11 @@ app.post("/products", (req, res) => {
 // PATCH /products/:id - Edit product (except stockStatus)
 app.patch("/products/:id", (req, res) => {
   const { productName, cost } = req.body;
-  const product = products.find((p) => p.id === parseInt(req.params.id));
+  const product = products.find((p) => p.id == req.params.id);
   if (!product) return res.status(404).json({ message: "Product not found" });
 
   if (productName !== undefined) product.productName = productName;
   if (cost !== undefined) product.cost = cost;
-
   res.json(product);
 });
 
@@ -76,10 +75,11 @@ app.patch("/products/:id/:status", (req, res) => {
 // DELETE /products/:id - Delete product by ID
 app.delete("/products/:id", (req, res) => {
   const id = parseInt(req.params.id);
-  const index = products.findIndex((p) => p.id === id);
-  if (index === -1)
+  const index = products.findIndex((p) => p.id == id);
+  if (index == -1)
     return res.status(404).json({ message: "Product not found" });
 
   const deleted = products.splice(index, 1);
   res.json({ message: "Product deleted" });
+  return deleted;
 });

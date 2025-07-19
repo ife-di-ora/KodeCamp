@@ -3,7 +3,7 @@ function verifyToken(req, res, next) {
   if (scheme.toLocaleLowerCase() == "bearer") {
     try {
       const decoded = jsonwebtoken.verify(token, process.env.JWT_KEY);
-      req.user = decoded; // attaches { userId, email, role } to req
+      req.user = decoded;
       next();
     } catch (err) {
       res.status(401).send({ message: "Invalid token" });
@@ -11,4 +11,4 @@ function verifyToken(req, res, next) {
   }
 }
 
-module.export = verifyToken;
+module.exports = verifyToken;

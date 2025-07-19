@@ -125,17 +125,50 @@ app.get("/products", async (req, res) => {
   }
 });
 
+// add new product
+
 app.post("/products", verifyToken, async (req, res) => {
+  if (req.user.role !== "admin") {
+    return res.status(403).send({ message: "Only admins can add products" });
+  }
+
   const { productName, cost, productImages, description, stockStatus } =
     req.body;
+
+  try {
+    const newProduct = await productModel.create({
+      productName,
+      cost,
+      productImages,
+      description,
+      stockStatus,
+      ownerId: req.user.userId,
+    });
+
+    res.status(201).send({ message: "Product created", newProduct });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
 });
 
-// app.get("/", (req, res) => {
-//   res.send("Server is running 🚀");
-// });
+// admin delete product
+app.delete("/products/:id", verifyToken, async (req, res) => {
+  if (req.user.role !== "admin") {
+    return res.status(403).send({ message: "Only admins can delete products" });
+  }
+
+  try {
+    const deleted = await productModel.findByIdAndDelete(req.params.id);
+    if (!deleted) {
+      return res.status(404).send({ message: "Product not found" });
+    }
+
+    res.send({ message: "Product deleted", deleted });
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on port: ${PORT}`);
 });
-
-// NODEMAILER IS USED TO SEND EMAILS FROM BACKEND

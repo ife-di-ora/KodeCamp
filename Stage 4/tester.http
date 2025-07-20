@@ -21,3 +21,9 @@ Content-Type: application/json
     "email": "his123@yahoo.com.com",
     "password": "123456"
 }
+
+###
+POST http://localhost:3000/products
+{
+    
+}

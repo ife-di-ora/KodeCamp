@@ -64,7 +64,8 @@ const userLogin = async (req, res) => {
       email: userDetail.email,
       role: userDetail.role,
     },
-    process.env.JWT_KEY
+    process.env.JWT_KEY,
+    { expiresIn: "1d" }
   );
 
   res.status(200).send({

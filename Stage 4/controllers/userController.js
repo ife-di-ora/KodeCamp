@@ -35,8 +35,7 @@ const registerUser = async (req, res) => {
       .status(200)
       .send({ message: `New ${role} added successfully`, newUser });
   } catch (error) {
-    console.log(error);
-    res.status(400).send({ message: "Unable to create User" });
+    res.status(500).send({ message: error.message });
   }
 };
 

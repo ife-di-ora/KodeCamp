@@ -57,7 +57,9 @@ const addNewProduct = async (req, res) => {
   const { productName, cost, productImages, description, stockStatus, brand } =
     req.body;
 
-  const brandExists = await brandModel.findOne({ brandName: brand });
+  const brandExists = await brandModel.findOne({
+    brandName: new RegExp(brand, "i"),
+  });
 
   if (!brandExists) {
     res.status(400).send({ message: "Brand Does not exist" });

@@ -11,7 +11,7 @@ Content-Type: application/json
 
 
 ###
-GET http://localhost:3000/products
+GET  http://localhost:3000/products
 
 ### 
 POST http://localhost:3000/auth/login
@@ -23,7 +23,26 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:3000/products
+POST http://localhost:3000/brands
+Content-Type: application/json 
+
 {
-    
+    "brandName": "Gucci"
 }
+
+###
+POST http://localhost:3000/products
+Content-Type: application/json 
+
+
+
+{
+    "productName": "Beans",
+      "cost": "200",
+      "productImages": "http://fuclala.com",
+      "description": "This is a loenght o noncsence",
+      "stockStatus": "in-stock",
+}
+
+###
+GET http://localhost:3000/products/DOLCE/1/2

@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 
 const userRouter = require("./routers/userRouter");
 const productsRouter = require("./routers/productsRouter");
+const brandsRouter = require("./routers/brandsRouter");
 
 const app = express();
 mongoose
@@ -22,6 +23,7 @@ app.use(express.json());
 // user
 app.use("/auth", userRouter);
 app.use("/products", productsRouter);
+app.use("/brands", brandsRouter);
 
 // get all products
 

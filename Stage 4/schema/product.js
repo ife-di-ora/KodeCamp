@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const paginate = require("mongoose-paginate-v2");
 
 productSchema = new mongoose.Schema(
   {
@@ -24,9 +25,16 @@ productSchema = new mongoose.Schema(
     stockStatus: {
       type: String,
     },
+    brand: {
+      type: mongoose.Types.ObjectId,
+      ref: "brands",
+      required: true,
+    },
   },
   { timestamps: true }
 );
+
+productSchema.plugin(paginate);
 
 const productModel = mongoose.model("products", productSchema);
 

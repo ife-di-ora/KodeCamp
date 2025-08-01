@@ -5,9 +5,11 @@ const {
   getAllProducts,
   addNewProduct,
   deleteProduct,
+  getBrandProducts,
 } = require("../controllers/productsController");
 
 router.get("/", getAllProducts);
+router.get("/:brand/:page/:limit", getBrandProducts);
 router.post("/", verifyToken, addNewProduct);
 router.delete("/:id", verifyToken, deleteProduct);
 

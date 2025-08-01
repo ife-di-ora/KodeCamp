@@ -6,7 +6,7 @@ function verifyToken(req, res, next) {
   if (scheme.toLocaleLowerCase() == "bearer") {
     try {
       const decoded = jsonwebtoken.verify(token, process.env.JWT_KEY);
-      console.log(decoded);
+
       req.user = decoded;
       next();
     } catch (err) {

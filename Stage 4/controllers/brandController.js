@@ -1,4 +1,5 @@
 const brandModel = require("../schema/brand");
+const productModel = require("../schema/product");
 
 const addBrand = async (req, res) => {
   const { brandName } = req.body;
@@ -26,12 +27,8 @@ const addBrand = async (req, res) => {
 const updateBrand = async (req, res) => {
   try {
     const { id } = req.params;
-    const { updateData } = req.body;
-    const brandExists = await brandModel.findByIdAndUpdate(
-      id,
-      { updateData },
-      { new: true }
-    );
+    const updateData = req.body;
+    const brandExists = await brandModel.findByIdAndUpdate(id, updateData);
     res.status(200).send({ message: "success", data: brandExists });
   } catch (error) {
     res.status(400).send({ message: error.message });
@@ -55,12 +52,24 @@ const getAllBrands = async (req, res) => {
 const deleteBrand = async (req, res) => {
   try {
     const { id } = req.params;
-    const brandToDelete = await brandModel.findByIdAndDelete(id);
-    return res
-      .status(200)
-      .send({ message: "Brand Deleted", data: brandToDelete });
+    const brandToDelete = await brandModel.findById(id);
+
+    if (!brandToDelete) {
+      return res.status(400).send({
+        message: "brand not found",
+      });
+    }
+
+    const deleteProducts = await productModel.deleteMany({ brand: id });
+    const deleteBrand = await brandModel.findByIdAndDelete(id);
+    console.log(deleteBrand);
+
+    return res.status(200).send({
+      message: `${deleteBrand.brandName} and ${deleteProducts.deletedCount} products under the brand deleted`,
+      data: brandToDelete,
+    });
   } catch (error) {
-    res.send({ message: error.message });
+    return res.send({ message: error.message });
   }
 };
 module.exports = { addBrand, getAllBrands, deleteBrand, updateBrand };

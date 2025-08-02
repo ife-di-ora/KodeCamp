@@ -37,9 +37,8 @@ const getBrandProducts = async (req, res) => {
       }
     );
 
-    if (allProducts.length < 1) {
-      res.send("No products under this brand");
-      return;
+    if (allProducts.totalDocs < 1) {
+      return res.send({ message: "No products listed under this brand" });
     }
     res.status(200).send({ message: "success", data: allProducts });
   } catch (error) {

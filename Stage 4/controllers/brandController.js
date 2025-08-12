@@ -60,12 +60,18 @@ const deleteBrand = async (req, res) => {
       });
     }
 
-    const deleteProducts = await productModel.deleteMany({ brand: id });
+    const productsUnderBrand = await productModel.find({ brand: id });
+
+    if (productsUnderBrand.length > 0) {
+      return res
+        .status(400)
+        .send({ message: "Products exist under brand. Unable to Delete" });
+    }
+
     const deleteBrand = await brandModel.findByIdAndDelete(id);
-    console.log(deleteBrand);
 
     return res.status(200).send({
-      message: `${deleteBrand.brandName} and ${deleteProducts.deletedCount} products under the brand deleted`,
+      message: `${deleteBrand.brandName} deleted`,
       data: brandToDelete,
     });
   } catch (error) {

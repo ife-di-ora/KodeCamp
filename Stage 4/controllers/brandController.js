@@ -16,9 +16,7 @@ const addBrand = async (req, res) => {
     const newBrand = await brandModel.create({
       brandName: brandName.toLocaleLowerCase(),
     });
-    res
-      .status(200)
-      .send({ message: `${newBrand.brandName} Brand successfully added` });
+    res.status(200).send({ message: " Brand  added", data: newBrand });
   } catch (error) {
     res.status(500).send({ message: "failed to add brand" });
   }

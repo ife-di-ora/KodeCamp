@@ -16,15 +16,6 @@ const orderSchema = new mongoose.Schema(
           type: Number,
           required: true,
         },
-        shippingStatus: {
-          type: String,
-          enum: {
-            values: ["pending", "shipped", "delivered"],
-            message: `{VALUE} is not supported`,
-          },
-          default: "pending",
-          required: true,
-        },
       },
     ],
     ownerId: {

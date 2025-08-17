@@ -69,13 +69,11 @@ const viewOneOrder = async (req, res) => {
 const changeOrderStatus = async (req, res) => {
   try {
     const { orderId } = req.params;
-    if (req.user != "admin") {
+    if (req.user.role != "admin") {
       return res.status(401).send({ message: "unauthorized user" });
     }
 
     let { newStatus } = req.body;
-
-    newStatus = new RegExp(newStatus, "i");
 
     if (
       newStatus &&
@@ -83,12 +81,18 @@ const changeOrderStatus = async (req, res) => {
         newStatus == "shipped" ||
         newStatus == "delivered")
     ) {
-      const updatedOrder = await orderModel.findByIdAndUpdate(orderId, {
-        orderStatus: newStatus,
-      });
+      const updatedOrder = await orderModel.findByIdAndUpdate(
+        orderId,
+        {
+          orderStatus: newStatus,
+        },
+        { returnDocument: "after" }
+      );
       res
         .status(200)
         .send({ message: "update successful", data: updatedOrder });
+    } else {
+      res.status(400).send({ message: "incorrect order status" });
     }
   } catch (error) {
     res.send({ message: error.message });

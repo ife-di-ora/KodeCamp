@@ -1,4 +1,3 @@
-const { populate } = require("dotenv");
 const brandModel = require("../schema/brand");
 const productModel = require("../schema/product");
 
@@ -17,8 +16,6 @@ const getAllProducts = async (req, res) => {
 const getBrandProducts = async (req, res) => {
   try {
     const { brand, page, limit } = req.params;
-
-    // const brandNameNoCase = new RegExp(brand, "i");
 
     const brandExists = await brandModel.findOne({
       brandName: new RegExp(brand, "i"),

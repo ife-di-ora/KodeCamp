@@ -77,4 +77,9 @@ const userLogin = async (req, res) => {
   });
 };
 
-module.exports = { registerUser, userLogin };
+const getAllUsers = async (req, res) => {
+  const allUsers = await userModel.find();
+  res.send({ data: allUsers });
+};
+
+module.exports = { registerUser, userLogin, getAllUsers };

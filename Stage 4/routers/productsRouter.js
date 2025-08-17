@@ -6,7 +6,7 @@ const {
   addNewProduct,
   deleteProduct,
   getBrandProducts,
-} = require("../controllers/productsController");
+} = require("../controllers/productController");
 
 router.get("/", getAllProducts);
 router.get("/:brand/:page/:limit", getBrandProducts);

@@ -82,4 +82,18 @@ const getAllUsers = async (req, res) => {
   res.send({ data: allUsers });
 };
 
-module.exports = { registerUser, userLogin, getAllUsers };
+const viewProfile = async (req, res) => {
+  try {
+    console.log(req.user);
+    const { userId } = req.user;
+    if (!userId) {
+      return res.status(400).send({ message: "user not authenticated" });
+    }
+    const profile = await userModel.findById(userId).select("-password");
+    return res.status(200).send({ data: profile, message: "success" });
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+module.exports = { registerUser, userLogin, getAllUsers, viewProfile };

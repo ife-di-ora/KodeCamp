@@ -9,7 +9,7 @@ const {
 } = require("../controllers/orderController");
 
 router.post("/", verifyToken, createUserOrder);
-router.get("/", verifyToken, viewOrders);
+router.get("/order-history", verifyToken, viewOrders);
 router.get("/:orderId", verifyToken, viewOneOrder);
 router.put("/:orderId", verifyToken, changeOrderStatus);
 

@@ -14,6 +14,7 @@ const createUserOrder = async (req, res) => {
       ordersList,
       ownerId: req.user.userId,
     });
+
     res
       .status(200)
       .send({ message: "order created successfully", data: newOrder });
@@ -88,6 +89,16 @@ const changeOrderStatus = async (req, res) => {
         },
         { returnDocument: "after" }
       );
+
+      // emit message to user
+
+      req.socket.to(updatedOrder.ownerId.toString()).emit("order-update", {
+        title: "New shipping status",
+        message: `Your last order shipping status has been updated to : ${newStatus}`,
+      });
+
+      console.log(updatedOrder.ownerId.toString());
+
       res
         .status(200)
         .send({ message: "update successful", data: updatedOrder });
@@ -98,6 +109,8 @@ const changeOrderStatus = async (req, res) => {
     res.send({ message: error.message });
   }
 };
+
+const notifyCustomer = (socket, value) => {};
 
 module.exports = {
   createUserOrder,

@@ -1,4 +1,14 @@
 const express = require("express");
+const app = express();
+const JsonWebToken = require("jsonwebtoken");
+
+const { Server } = require("socket.io");
+const { createServer } = require("http");
+
+const server = createServer(app);
+
+const io = new Server(server);
+
 require("dotenv").config();
 const mongoose = require("mongoose");
 
@@ -7,7 +17,6 @@ const productsRouter = require("./routers/productsRouter");
 const brandsRouter = require("./routers/brandsRouter");
 const orderRouter = require("./routers/orderRouter");
 
-const app = express();
 mongoose
   .connect(process.env.DB_URL)
   .then(() => {
@@ -21,6 +30,24 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
+app.use((req, res, next) => {
+  req.socket = io;
+  next();
+});
+
+io.use((socket, next) => {
+  const auth = socket.handshake.headers.authorization;
+  const [type, token] = auth.split(" ");
+  console.log("token:", token);
+  if (type.toLocaleLowerCase() == "bearer") {
+    const value = JsonWebToken.verify(token, process.env.JWT_KEY);
+    socket.handshake.auth.decoded = value;
+    next();
+  } else {
+    socket.send("Unatuhorized");
+  }
+});
+
 // user
 app.use("/auth", userRouter);
 app.use("/products", productsRouter);
@@ -30,8 +57,25 @@ app.get("/", (req, res) => {
   res.send("Here we go");
 });
 
-// get all products
+// start server.io
+io.on("connection", (socket) => {
+  console.log("a user connected", socket.id);
 
-app.listen(PORT, () => {
-  console.log(`Server running on port: ${PORT}`);
+  const decoded = socket.handshake.auth.decoded;
+  console.log(decoded);
+
+  socket.join(decoded.userId);
+
+  socket.on("order-update", (payload) => {
+    socket.to(payload.userId).emit(payload.message);
+    console.log(payload);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("disconnected ", socket.id);
+  });
+});
+
+server.listen(PORT, () => {
+  console.log("now listening");
 });

@@ -38,7 +38,6 @@ app.use((req, res, next) => {
 io.use((socket, next) => {
   const auth = socket.handshake.headers.authorization;
   const [type, token] = auth.split(" ");
-  console.log("token:", token);
   if (type.toLocaleLowerCase() == "bearer") {
     const value = JsonWebToken.verify(token, process.env.JWT_KEY);
     socket.handshake.auth.decoded = value;
@@ -59,17 +58,8 @@ app.get("/", (req, res) => {
 
 // start server.io
 io.on("connection", (socket) => {
-  console.log("a user connected", socket.id);
-
   const decoded = socket.handshake.auth.decoded;
-  console.log(decoded);
-
   socket.join(decoded.userId);
-
-  socket.on("order-update", (payload) => {
-    socket.to(payload.userId).emit(payload.message);
-    console.log(payload);
-  });
 
   socket.on("disconnect", () => {
     console.log("disconnected ", socket.id);

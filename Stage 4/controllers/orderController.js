@@ -24,6 +24,9 @@ const createUserOrder = async (req, res) => {
 };
 
 const viewOrders = async (req, res) => {
+  if (!["customer", "admin"].includes(req.user.role))
+    return res.status(400).send({ message: "unauthorized user" });
+
   if (req.user.role == "customer") {
     const userOrders = await orderModel.find({ ownerId: req.user.userId });
     if (!userOrders) {
@@ -32,13 +35,11 @@ const viewOrders = async (req, res) => {
     res.status(200).send({ message: "success", data: userOrders });
   }
 
-  if (req.user.role == "admin") {
-    const allOrders = await orderModel.find();
-    if (allOrders.length < 1) {
-      return res.status(400).send({ message: "no user orders created" });
-    }
-    res.status(200).send({ message: "success", data: allOrders });
+  const allOrders = await orderModel.find();
+  if (allOrders.length < 1) {
+    return res.status(400).send({ message: "no user orders created" });
   }
+  res.status(200).send({ message: "success", data: allOrders });
 };
 
 // view one order
@@ -109,8 +110,6 @@ const changeOrderStatus = async (req, res) => {
     res.send({ message: error.message });
   }
 };
-
-const notifyCustomer = (socket, value) => {};
 
 module.exports = {
   createUserOrder,

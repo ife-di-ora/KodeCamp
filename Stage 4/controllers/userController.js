@@ -7,6 +7,7 @@ const registerUser = async (req, res) => {
   try {
     const { fullName, email, password, role } = req.body;
 
+
     // validate role
     const schema = joi.string().valid("admin", "customer");
     const { error } = schema.validate(role);

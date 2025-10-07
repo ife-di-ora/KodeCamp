@@ -5,6 +5,8 @@ const createNewReq = async (req, res) => {
     return res.status(401).send({ message: "unauthorized user" });
   }
 
+  console.log(req.user.id);
+
   const deliveryRequest = await Delivery.create({
     ...req.body,
     ownerId: req.user.id,
@@ -26,14 +28,15 @@ const viewReq = async (req, res) => {
   }
   const { requestId } = req.params;
 
-  const selectedRequest = await Delivery.findOneById(requestId);
+  const selectedRequest = await Delivery.findById(requestId);
 
   if (!selectedRequest) {
     return res.status(400).send({ message: "Delivery Request not found" });
   }
 
   if (req.user.role.toLocaleLowerCase() == "customer") {
-    if (req.user.id == selectedRequest.ownerId) {
+    console.log(req.user.id, "-", selectedRequest.ownerId.toString());
+    if (req.user.id === selectedRequest.ownerId.toString()) {
       return res
         .status(200)
         .send({ message: "successful", data: selectedRequest });

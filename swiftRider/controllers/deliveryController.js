@@ -68,6 +68,8 @@ const acceptReq = async (req, res) => {
       .status(200)
       .send({ data: acceptedReq, message: "successfully updated" });
   }
+
+  // email client
 };
 
 module.exports = { createNewReq, viewReq, acceptReq };

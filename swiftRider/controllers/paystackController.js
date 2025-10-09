@@ -18,8 +18,7 @@ const initializePayment = async (req, res) => {
 
     res.status(response.status).send({ result: response.data });
   } catch (error) {
-    console.log(error);
-    throw new Error(error);
+    res.send(error.message);
   }
 };
 

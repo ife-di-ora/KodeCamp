@@ -1,4 +1,16 @@
+const nodemailer = require("nodemailer");
 const Delivery = require("../schema/Delivery");
+const User = require("../schema/User");
+
+const transporter = nodemailer.createTransport({
+  host: "smtp.ethereal.email",
+  port: 587,
+  secure: false,
+  auth: {
+    user: process.env.EMAIL_ADDRESS,
+    pass: process.env.EMAIL_PASSWORD,
+  },
+});
 
 const createNewReq = async (req, res) => {
   if (req.user.role.toLocaleLowerCase() !== "customer") {
@@ -20,7 +32,28 @@ const createNewReq = async (req, res) => {
     .send({ message: "successfully created request", data: deliveryRequest });
 };
 
-// *************** View Req  **************
+// *************** View All Req  **************
+const viewAllReq = async (req, res) => {
+  if (req.user.role.toLocaleLowerCase() === "admin") {
+    const allReq = await Delivery.find();
+    res.status(200).send({ data: allReq, message: "success" });
+    return;
+  }
+
+  if (req.user.role.toLocaleLowerCase() === "rider") {
+    const allPendingReq = await Delivery.find({ status: "pending" });
+    res.status(200).send({ data: allPendingReq, message: "success" });
+    return;
+  }
+
+  if (req.user.role.toLocaleLowerCase() === "customer") {
+    const allMyReq = await Delivery.find({ ownerId: req.user.id });
+    res.status(200).send({ data: allMyReq, message: "success" });
+    return;
+  }
+};
+
+// *************** View One Req  **************
 
 const viewReq = async (req, res) => {
   if (!req.user) {
@@ -41,7 +74,7 @@ const viewReq = async (req, res) => {
         .status(200)
         .send({ message: "successful", data: selectedRequest });
     }
-    res.status(400).send({ message: "this is not your order" });
+    res.status(401).send({ message: "this is not your order" });
   }
 
   return res.status(200).send({ data: selectedRequest, message: "success" });
@@ -51,11 +84,11 @@ const viewReq = async (req, res) => {
 
 const acceptReq = async (req, res) => {
   const { requestId } = req.params;
-  const { role, id } = req.user;
+  const { role, id, email } = req.user;
   const { status } = req.body;
 
   if (role.toLocaleLowerCase() !== "rider") {
-    return res.status(400).send({ message: "unauthorized" });
+    return res.status(401).send({ message: "unauthorized" });
   }
 
   const acceptedReq = await Delivery.findByIdAndUpdate(
@@ -63,6 +96,7 @@ const acceptReq = async (req, res) => {
     { status, riderId: id },
     {
       returnDocument: "after",
+      runValidators: true,
     }
   );
 
@@ -73,6 +107,17 @@ const acceptReq = async (req, res) => {
   }
 
   // email client
+
+  (async () => {
+    const reqOwner = await User.findById(acceptedReq.ownerId);
+
+    await transporter.sendMail({
+      from: "Swift Rider",
+      to: reqOwner.email,
+      subject: "Update on your package",
+      text: `your order is ${acceptedReq.status}`,
+    });
+  })();
 };
 
-module.exports = { createNewReq, viewReq, acceptReq };
+module.exports = { createNewReq, viewReq, acceptReq, viewAllReq };

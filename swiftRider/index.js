@@ -5,6 +5,7 @@ const app = express();
 const userRoutes = require("./routers/userRoutes");
 const deliveryRoutes = require("./routers/deliveryRoutes");
 const paystackRoutes = require("./routers/paystackRoutes");
+const locationRoutes = require("./routers/locationRoutes");
 
 app.use(express.json());
 
@@ -22,6 +23,7 @@ app.get("/", (req, res) => {
 app.use("/user", userRoutes);
 app.use("/del", deliveryRoutes);
 app.use("/paystack", paystackRoutes);
+app.use("/location", locationRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log("server running on port ", process.env.PORT);
